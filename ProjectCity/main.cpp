@@ -73,7 +73,7 @@ int main(int argc, char* args[]) {
 
 	glewWrapper glewInitSettings;
 	SDL sdl(&glewInitSettings);
-
+	glewInitSettings.init();
 	
 	
 	bool runRenderLoop = true;
@@ -94,7 +94,7 @@ int main(int argc, char* args[]) {
 		return -1;
 	}
 
-	mainScene.resize(glewInitSettings.window_width, glewInitSettings.window_height);
+	mainScene.resize(sdl.window_width, sdl.window_height);
 
 	while (runRenderLoop)
 	{
@@ -107,7 +107,6 @@ int main(int argc, char* args[]) {
 		mainScene.render();
 
 		// Check for any errors that might have happened inside render call.
-		// Stop the loop if there has been an error.
 		runRenderLoop &= checkOpenGLErrors();
 
 		// Display window
@@ -116,17 +115,15 @@ int main(int argc, char* args[]) {
 		// Process events
 		SDL_Event e;
 
-
 		while (SDL_PollEvent(&e))
 		{
-			// Sample event handling code. Some of this could be useful in your own scene's handleEvent() function
+			// Sample event handling code
 			switch (e.type)
 			{
 				// Program window closed etc.
 			case SDL_QUIT:
 				runRenderLoop = false;
 				break;
-				// Keyboard key pressed down (scancode is the physical key on keyboard, keycode is the symbolic key meaning)
 			case SDL_KEYDOWN:
 			{
 				//std::cout << "Key " << e.key.keysym.scancode << " (" << SDL_GetKeyName(e.key.keysym.sym) << ") pressed" << std::endl;
@@ -136,17 +133,12 @@ int main(int argc, char* args[]) {
 			}
 			// Keyboard key released
 			case SDL_KEYUP:
-				//std::cout << "Key " << e.key.keysym.scancode << " (" << SDL_GetKeyName(e.key.keysym.sym) << ") released" << std::endl;
 				break;
 				// Mouse moved
 			case SDL_MOUSEMOTION:
-				//std::cout << "Mouse motion: " << e.motion.x << ", " << e.motion.y << std::endl;
 				break;
 				// Mouse button pressed
 			case SDL_MOUSEBUTTONDOWN:
-				// See https://wiki.libsdl.org/SDL_MouseButtonEvent
-				// Note: Mouse wheel has its own event
-				//std::cout << "Mouse button down at : " << e.button.x << ", " << e.button.y << " button: ";
 				switch (e.button.button)
 				{
 				case SDL_BUTTON_LEFT:
@@ -172,25 +164,17 @@ int main(int argc, char* args[]) {
 				break;
 				// Mouse button released
 			case SDL_MOUSEBUTTONUP:
-				// See https://wiki.libsdl.org/SDL_MouseButtonEvent
 				break;
-				// Window-system event
 			case SDL_WINDOWEVENT:
-				// See https://wiki.libsdl.org/SDL_WindowEvent
 				switch (e.window.event)
 				{
 				case SDL_WINDOWEVENT_RESIZED:
-					/*window_width = e.window.data1;
-					window_height = e.window.data2;
-					std::cout << "Window Resized to : " << window_width << " x " << window_height << std::endl;*/
 					mainScene.resize(e.window.data1, e.window.data2);
 					break;
 				}
 				break;
 			}
 
-			// Tell running scene what just happened and stop the loop if handler returns false.
-			// AND operation is done so that SDL_QUIT handler above won't be ignored either.
 			runRenderLoop &= mainScene.handleEvent(e);
 		}
 
