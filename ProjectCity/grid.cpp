@@ -3,7 +3,7 @@
 grid::grid(map* mapInstancePtr) {
 
 	this->mapInstancePtr = mapInstancePtr;
-	
+
 
 	//ShaderProgram shaderProgram;
 }
@@ -15,16 +15,19 @@ grid::~grid() {
 
 void grid::createGeometry() {
 
-	vertices.clear();
+	modelPositions.clear();
 	indices.clear();
 
 	GLfloat xStep = -mapInstancePtr->getGridX();
 	GLfloat zStep = -mapInstancePtr->getGridZ();;
 	GLint indiceCounter = 0;
-	for (int xIterator = -mapInstancePtr->getGridX(); xIterator <= mapInstancePtr->getGridX(); xIterator+=2)
+	for (int xIterator = -mapInstancePtr->getGridX(); xIterator <= mapInstancePtr->getGridX(); xIterator += 2)
 	{
-		vertices.push_back(Vertex(xIterator, 0.05f, -mapInstancePtr->getGridZ(), 0.0f, 0.0f, 0.0f));
-		vertices.push_back(Vertex(xIterator, 0.05f, mapInstancePtr->getGridZ(), 0.0f, 0.0f, 0.0f));
+		modelPositions.push_back(glm::vec3(xIterator, 0.05f, -mapInstancePtr->getGridZ()));
+		modelPositions.push_back(glm::vec3(xIterator, 0.05f, mapInstancePtr->getGridZ()));
+
+		modelColors.push_back(glm::vec3(0, 0, 0));
+		modelColors.push_back(glm::vec3(0, 0, 0));
 
 		indices.push_back(indiceCounter * 2);
 		indices.push_back(indiceCounter * 2 + 1);
@@ -34,8 +37,11 @@ void grid::createGeometry() {
 
 	for (int zIterator = -mapInstancePtr->getGridZ(); zIterator <= mapInstancePtr->getGridZ(); zIterator += 2)
 	{
-		vertices.push_back(Vertex(-mapInstancePtr->getGridX(), 0.05f, zIterator, 0.0f, 0.0f, 0.0f));
-		vertices.push_back(Vertex(mapInstancePtr->getGridX(), 0.05f, zIterator, 0.0f, 0.0f, 0.0f));
+		modelPositions.push_back(glm::vec3(-mapInstancePtr->getGridX(), 0.05f, zIterator));
+		modelPositions.push_back(glm::vec3(mapInstancePtr->getGridX(), 0.05f, zIterator));
+
+		modelColors.push_back(glm::vec3(0, 0, 0));
+		modelColors.push_back(glm::vec3(0, 0, 0));
 
 		indices.push_back(indiceCounter * 2);
 		indices.push_back(indiceCounter * 2 + 1);

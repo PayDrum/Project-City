@@ -34,16 +34,15 @@ SDL::SDL(glewWrapper* glewInitSettings) :
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG); // VERY useful for debugging but might affect performance! https://www.opengl.org/wiki/Debug_Output
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, glewInitSettings->ogl_major_version);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, glewInitSettings->ogl_minor_version);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE); // Core functionality only, no compability for deprecated functionality
-																				   //	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY); // Allow deprecated functionality
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE); 
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-	SDL_GL_SetSwapInterval(1); // Vertical Sync control. Swap every 1 vsync. 0 swaps immediately. -1 (in some systems) enables late swap tearing: https://wiki.libsdl.org/SDL_GL_SetSwapInterval
+	SDL_GL_SetSwapInterval(1); // Vertical Sync control
 
-							   // SDL_GL_DEPTH_SIZE (in bits)
-							   // SDL_GL_STENCIL_SIZE (in bits)
+	// SDL_GL_DEPTH_SIZE (in bits)
+	// SDL_GL_STENCIL_SIZE (in bits)
+
 	// Create window
 	// Pos can also be SDL_WINDOWPOS_CENTERED, or SDL_WINDOWPOS_UNDEFINED
-	// See https://wiki.libsdl.org/SDL_CreateWindow for more options
 
 	int posX = SDL_WINDOWPOS_CENTERED, posY = SDL_WINDOWPOS_CENTERED;
 
@@ -63,36 +62,9 @@ SDL::SDL(glewWrapper* glewInitSettings) :
 		return;
 	}
 
-	// Initialize GLEW now that we have a context
-	// Setting glewExperimental allows OpenGL symbols to be found even when they are not listed in driver's extension list - Needed when using core profiles due to GLEW bugs
-	// Depending on the drivers, this might be necessary to get even some of the basic functionality to work.
-	glewExperimental = GL_TRUE; // This is a global variable provided by GLEW
-	GLenum err = glewInit();
+	
 
-	if (err != GLEW_OK)
-	{
-		std::cerr << "SDL::SDL(): glewInit error: " << glewGetErrorString(err) << std::endl;
-		return;
-	}
-
-	// Ignore GL errors caused by GLEW initialization (invalid ENUM)
-	// Wait for all OpenGL functions to complete first and then cleate error state.
-	//glFinish();
-	//while (glGetError() != GL_NO_ERROR);
-
-	/*std::cout << "Using GLEW " << glewGetString(GLEW_VERSION) << std::endl;*/
-
-	// Initialize OpenGL debugging if available (See debugmessagecallback.cpp)
-	// Requires SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG); above
-
-	/*if (doOpenGLDebug)
-	installDebugMessageCallback();*/
-
-	/*{
-	int v;
-	bool version_ok = true;
-
-	std::cout << "SDL_GL_CONTEXT_MAJOR_VERSION: ";
+	/*std::cout << "SDL_GL_CONTEXT_MAJOR_VERSION: ";
 	if (SDL_GL_GetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, &v))
 	std::cout << "error: " << SDL_GetError() << std::endl;
 	else

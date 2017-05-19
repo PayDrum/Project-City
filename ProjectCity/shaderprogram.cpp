@@ -24,12 +24,9 @@ bool ShaderProgram::loadFile(const std::string &filename, std::string &contents)
 	return is.good();
 }
 
-/**
-* Compile a single shader.
-* \param shadertype GL_FRAGMENT_SHADER, GL_VERTEX_SHADER etc.
-* \param source Shader source
-* \param[out] shaderhandle Allocated handle for the new shader if successful
-*/
+
+// Compile a single shader.
+
 bool ShaderProgram::compile(GLenum shadertype, const std::string &source, GLuint &shaderhandle)
 {
 	// Allocate handle for new shader

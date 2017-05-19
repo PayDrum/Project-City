@@ -44,8 +44,7 @@ bool scene::init() {
 
 
 
-
-	tile.setScale(1.0f / (2.0f* activeMapPtr->getGridX()));
+	//tile.setScale(1.0f / (2.0f* activeMapPtr->getGridX()));
 	tile.buildBuffers();
 	tile.createTileMap();
 
@@ -94,7 +93,7 @@ void scene::render() {
 	//modelMat = glm::scale(modelMat, glm::vec3(0.3f, 0.3f, 0.3f));
 
 	// Precalculate transformation matrix for the shader and use it
-	mvpMat = projectionMat * viewMat * grid.modelMat;
+	mvpMat = projectionMat * viewMat * grid.getModelMat();
 
 	mvpMattwo = projectionMat * viewMat *tile.getModelMat();
 

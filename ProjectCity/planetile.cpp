@@ -4,6 +4,7 @@ planeTile::planeTile(map* mapInstancePtr) {
 
 
 	this->mapInstanceptr = mapInstancePtr;
+	setScale(1.0f / (2.0f* mapInstancePtr->getGridX()));
 	//ShaderProgram shaderProgram;
 }
 
@@ -22,13 +23,18 @@ planeTile::~planeTile() {
 
 void planeTile::createGeometry() {
 
-	vertices.clear();
+	modelPositions.clear();
 	indices.clear();
 
-	vertices.push_back(Vertex(-1.0f, 0.0f, 1.0f, 0.5f, 0.5f, 0.5f));
-	vertices.push_back(Vertex(1.0f, 0.0f, 1.0f, 1, 0.5f, 0.5f));
-	vertices.push_back(Vertex(-1.0f, 0.0f, -1.0f, 0.5f, 0.5f, 0.5f));
-	vertices.push_back(Vertex(1.0f, 0.0f, -1.0f, 0.5f, 0.5f, 0.5f));
+	modelPositions.push_back(glm::vec3(-1.0f, 0.0f, 1.0f));
+	modelPositions.push_back(glm::vec3(1.0f, 0.0f, 1.0f));
+	modelPositions.push_back(glm::vec3(-1.0f, 0.0f, -1.0f));
+	modelPositions.push_back(glm::vec3(1.0f, 0.0f, -1.0f));
+
+	modelColors.push_back(glm::vec3(0.5f, 0.5f, 0.5f));;
+	modelColors.push_back(glm::vec3(1, 0.5f, 0.5f));
+	modelColors.push_back(glm::vec3(0.5f, 0.5f, 0.5f));
+	modelColors.push_back(glm::vec3(0.5f, 0.5f, 0.5f));
 
 
 	indices.push_back(0);
@@ -39,8 +45,8 @@ void planeTile::createGeometry() {
 	indices.push_back(3);
 
 	//
-	this->initialScale = 1.0f;
-	setScale(this->initialScale);
+	//this->initialScale = 1.0f;
+	//setScale(this->initialScale);
 
 }
 
@@ -86,7 +92,7 @@ void planeTile::renderInstanced() {
 		, static_cast<GLsizei>(indices.size())
 		, GL_UNSIGNED_SHORT
 		, &indices[0],
-		mapInstanceptr->getGridX() * mapInstanceptr ->getGridZ());
+		mapInstanceptr->getGridX() * mapInstanceptr->getGridZ());
 
 	glBindVertexArray(0);
 }
@@ -104,7 +110,7 @@ void planeTile::createTileMap() {
 		{
 			property.translateMat = glm::translate(glm::mat4(1.0f),
 				glm::vec3(xIterator + 1.0f, 0, zIterator + 1.0f));
-			property.color = glm::vec3(xIterator + mapInstanceptr->getGridX(), 255, zIterator+ mapInstanceptr->getGridZ())/510.0f;
+			property.color = glm::vec3(xIterator + mapInstanceptr->getGridX(), 255, zIterator + mapInstanceptr->getGridZ()) / 510.0f;
 			propertyCollection.push_back(property);
 		}
 	}

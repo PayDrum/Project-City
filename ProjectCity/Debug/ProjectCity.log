@@ -1,9 +1,9 @@
-﻿  grid.cpp
-e:\github\projectcity\projectcity\grid.cpp(21): warning C4244: 'initializing': conversion from 'int' to 'GLfloat', possible loss of data
-e:\github\projectcity\projectcity\grid.cpp(22): warning C4244: 'initializing': conversion from 'int' to 'GLfloat', possible loss of data
-e:\github\projectcity\projectcity\grid.cpp(26): warning C4244: 'argument': conversion from 'int' to 'GLfloat', possible loss of data
-e:\github\projectcity\projectcity\grid.cpp(27): warning C4244: 'argument': conversion from 'int' to 'GLfloat', possible loss of data
-e:\github\projectcity\projectcity\grid.cpp(37): warning C4244: 'argument': conversion from 'int' to 'GLfloat', possible loss of data
-e:\github\projectcity\projectcity\grid.cpp(38): warning C4244: 'argument': conversion from 'int' to 'GLfloat', possible loss of data
+﻿  scene.cpp
+  planetile.cpp
+  model.cpp
+  main.cpp
+  Generating Code...
+  Skipping... (no relevant changes detected)
+  grid.cpp
   ProjectCity.vcxproj -> E:\GitHub\ProjectCity\Debug\ProjectCity.exe
   ProjectCity.vcxproj -> E:\GitHub\ProjectCity\Debug\ProjectCity.pdb (Full PDB)

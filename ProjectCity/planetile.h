@@ -11,7 +11,7 @@
 #include "map.h"
 
 
-class planeTile: public model {
+class planeTile : public model {
 
 	ShaderProgram shaderProgram;
 	const std::string vertexShaderName = "shaders/groundplane.vs";
@@ -19,11 +19,11 @@ class planeTile: public model {
 
 	GLuint tbo; //transformation matrix buffer for instancing purpose
 
-	GLfloat initialScale ;
+	GLfloat initialScale = 1.0f;
 
 	struct InstanceProperties
 	{
-		glm::mat4 translateMat ;
+		glm::mat4 translateMat;
 		glm::vec3 color;
 
 		InstanceProperties(glm::mat4 mat = glm::mat4(1.0f), GLfloat r = 0.0f, GLfloat g = 0.0f, GLfloat b = 0.0f)
@@ -62,8 +62,8 @@ public:
 
 	ShaderProgram* getShaderProgram() { return &shaderProgram; }
 
-	glm::mat4 getModelMat() { 
+	/*glm::mat4 getModelMat() {
 		return this->modelMat;
-	}
+	}*/
 
 };
