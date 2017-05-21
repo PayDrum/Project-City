@@ -13,7 +13,7 @@
 
 class planeTile : public model {
 
-	ShaderProgram shaderProgram;
+	//ShaderProgram shaderProgram;
 	const std::string vertexShaderName = "shaders/groundplane.vs";
 	const std::string fragmentShaderName = "shaders/groundplane.fs";
 
@@ -43,7 +43,7 @@ public:
 	planeTile(map*);
 	~planeTile();
 
-	virtual void createGeometry();
+	virtual bool createGeometry();
 	virtual bool loadShaderProgram();
 
 	void createTileMap();

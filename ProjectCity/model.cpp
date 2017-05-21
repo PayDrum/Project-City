@@ -41,16 +41,7 @@ void model::buildBuffers() {
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), &indices[0], GL_STATIC_DRAW);
 	}
 
-	/*glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);*/
-
-	////glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	//glVertexAttribPointer(getShaderProgram()->getPositionAttribLocation(), 3, GL_FLOAT, GL_FALSE, sizeof(struct Vertex), (const GLvoid*)offsetof(struct Vertex, position));
-	//glEnableVertexAttribArray(getShaderProgram()->getPositionAttribLocation());
-
-	//glVertexAttribPointer(getShaderProgram()->getColorAttribLocation(), 3, GL_FLOAT, GL_FALSE, sizeof(struct Vertex), (const GLvoid*)offsetof(struct Vertex, color));
-	//glEnableVertexAttribArray(getShaderProgram()->getColorAttribLocation()); // Bind our second VBO as being the active buffer and storing vertex attributes (colors)
-
+	
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
@@ -66,23 +57,20 @@ void model::generateVertexArrayObject(GLuint location, GLuint numberOfElements) 
 
 }
 
-//void model::generateVertexBufferObject(GLuint* vbo, GLuint numberOfelements, void* vectorPtr) {
-//
-//	std::vector<glm::vec2>* vec2Ptr = nullptr;
-//	std::vector<glm::vec3>* vec3Ptr = nullptr;
-//
-//	if (numberOfelements == 2) {
-//		vec2Ptr = static_cast <std::vector<glm::vec2>*>(vectorPtr);
-//	}
-//
-//	if (numberOfelements == 3) {
-//		vec3Ptr = static_cast <std::vector<glm::vec3>*>(vectorPtr);
-//	}
-//	glGenBuffers(1, vbo);
-//	glBindBuffer(GL_ARRAY_BUFFER, *vbo);
-//	glBufferData(GL_ARRAY_BUFFER, vectorPtr->size() * 3 * sizeof(GLfloat), vectorPtr, GL_STATIC_DRAW);
-//
-//}
+bool model::load() {
+
+	bool allOk=true;
+
+	allOk &= loadShaderProgram();
+	allOk &= createGeometry();
+	try {
+		buildBuffers();
+	}
+	catch (...) {
+		allOk = false;
+	}
+	return allOk;
+}
 
 void model::render() {
 
@@ -116,6 +104,11 @@ void model::setTranslate(glm::vec3 translateVector) {
 void model::updateModelMat() {
 
 	this->modelMat = translateMat * rotationMat * scaleMat;
+}
+
+void model::useShaderProgram() {
+
+	glUseProgram(shaderProgram.getShaderProgramHandler());
 }
 
 //void model::createVboBuffer(size_t vertexStructSize, void* verticesPtr) 

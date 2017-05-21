@@ -13,7 +13,7 @@ grid::~grid() {
 	//ShaderProgram shaderProgram;
 }
 
-void grid::createGeometry() {
+bool grid::createGeometry() {
 
 	modelPositions.clear();
 	indices.clear();
@@ -54,6 +54,11 @@ void grid::createGeometry() {
 
 
 	setTranslate(glm::vec3(0.5f, 0, 0.5f));
+
+	if (modelPositions.empty())
+		return false;
+	else
+		return true;
 }
 
 bool grid::loadShaderProgram() {

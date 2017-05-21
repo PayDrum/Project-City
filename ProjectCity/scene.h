@@ -18,13 +18,13 @@ private:
 
 	GLsizei width, height;
 
-	planeTile tile;
-	std::vector <planeTile> tileMap;
+	//std::vector <planeTile> tileMap;
 	grid grid;
+	planeTile tile;
 
 
-	ShaderProgram shaderProgramGrid;
-	GLuint vaoGrid, vboGrid, iboGrid;
+	//ShaderProgram shaderProgramGrid;
+	//GLuint vaoGrid, vboGrid, iboGrid;
 
 	/*struct Vertex
 	{
@@ -46,8 +46,8 @@ private:
 	//std::vector<Vertex> gridVertices; // Source data for our model
 	//std::vector<GLushort> gridIndices;
 
-	glm::mat4 mvpMat;
-	glm::mat4 mvpMattwo;
+	//glm::mat4 mvpMat;
+	//glm::mat4 mvpMattwo;
 
 	glm::mat4 projectionMat;
 	glm::mat4 viewMat;

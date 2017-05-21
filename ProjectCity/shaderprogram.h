@@ -23,7 +23,7 @@ public:
 
 	bool load(const std::string &vertexshader, const std::string &fragmentshader);
 
-	GLuint getShaderProgram()
+	GLuint getShaderProgramHandler()
 	{
 		return shaderprogram;
 	}

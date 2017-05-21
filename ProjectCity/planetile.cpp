@@ -21,7 +21,7 @@ planeTile::~planeTile() {
 	//ShaderProgram shaderProgram;
 }
 
-void planeTile::createGeometry() {
+bool planeTile::createGeometry() {
 
 	modelPositions.clear();
 	indices.clear();
@@ -47,7 +47,10 @@ void planeTile::createGeometry() {
 	//
 	//this->initialScale = 1.0f;
 	//setScale(this->initialScale);
-
+	if (modelPositions.empty())
+		return false;
+	else
+		return true;
 }
 
 bool planeTile::loadShaderProgram() {
@@ -62,6 +65,7 @@ void planeTile::buildInstancedBuffers() {
 	glBindBuffer(GL_ARRAY_BUFFER, tbo);
 	glBufferData(GL_ARRAY_BUFFER, propertyCollection.size() * sizeof(InstanceProperties), &propertyCollection[0], GL_STATIC_DRAW);
 
+	//revision needed
 	glBindVertexArray(vao);
 	glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(InstanceProperties), (const GLvoid*)(sizeof(GLfloat) * 0));
 	glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(InstanceProperties), (const GLvoid*)(sizeof(GLfloat) * 4));

@@ -13,7 +13,6 @@
 
 class grid : public model {
 
-	ShaderProgram shaderProgram;
 	map* mapInstancePtr;
 
 public:
@@ -26,13 +25,8 @@ public:
 	
 	grid(map*);
 	~grid();
-	virtual void createGeometry();
-	//void render();
+	virtual bool createGeometry();
 	virtual bool loadShaderProgram();
-	//void buildBuffers();
-
-	ShaderProgram* getShaderProgram() { return &shaderProgram; }
-
 
 };
 

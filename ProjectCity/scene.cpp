@@ -34,41 +34,16 @@ bool scene::init() {
 
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
-	// load shader program for the tile, if fails, init fails
-	if (!tile.loadShaderProgram())
+	//load the tile, and build it in an instanced manner
+	if (!tile.load())
 		return false;
-	// Create tile geometry
-	tile.createGeometry();
-	//ShaderProgram test = tile.getShader();
-	glUseProgram(tile.getShaderProgram()->getShaderProgram());
-
-
-
-	//tile.setScale(1.0f / (2.0f* activeMapPtr->getGridX()));
-	tile.buildBuffers();
 	tile.createTileMap();
-
-
-
-
 	tile.buildInstancedBuffers();
 
-
-
-
-
-	if (!grid.loadShaderProgram())
+	//load the grid
+	if (!grid.load())
 		return false;
 	// Create tile geometry
-	grid.createGeometry();
-	//ShaderProgram test = tile.getShader();
-	glUseProgram(grid.getShaderProgram()->getShaderProgram());
-
-
-
-	grid.buildBuffers();
-
-
 	return true;
 
 }
@@ -82,33 +57,30 @@ void scene::render() {
 	// Clear background
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	//culling settings
 	glCullFace(GL_BACK);
 	//glEnable(GL_CULL_FACE);
 	glDisable(GL_CULL_FACE);
 
 	// Calculate model transformation
-	modelMat = glm::mat4(1.0f);
+	//modelMat = glm::mat4(1.0f);
 	//modelMat = glm::translate(modelMat, glm::vec3(1.0, 0.0, 0.0)); // Translate object +1 on x-axis after rotation
 	//modelMat = glm::rotate(modelMat, rotation, glm::vec3(0.0, 1.0, 0.0)); // Rotate object around y-axis
 	//modelMat = glm::scale(modelMat, glm::vec3(0.3f, 0.3f, 0.3f));
 
-	// Precalculate transformation matrix for the shader and use it
-	mvpMat = projectionMat * viewMat * grid.getModelMat();
+	//build the mvp mat for each model
+	tile.mvpMat = projectionMat * viewMat *tile.getModelMat();
+	grid.mvpMat = projectionMat * viewMat * grid.getModelMat();
 
-	mvpMattwo = projectionMat * viewMat *tile.getModelMat();
-
-	glUseProgram(tile.getShaderProgram()->getShaderProgram());
-	glUniformMatrix4fv(glGetUniformLocation(tile.getShaderProgram()->getShaderProgram(), "mvpmatrix"), 1, GL_FALSE, glm::value_ptr(mvpMattwo));
-
-
-
+	//assign the uniform and render the tilemap(not a single tile)
+	tile.useShaderProgram();
+	glUniformMatrix4fv(glGetUniformLocation(tile.getShaderProgram()->getShaderProgramHandler(), "mvpmatrix"), 1, GL_FALSE, glm::value_ptr(tile.mvpMat));
 	tile.renderInstanced();
 	//tile.render();
 
-
-	glUseProgram(grid.getShaderProgram()->getShaderProgram());
-	glUniformMatrix4fv(glGetUniformLocation(grid.getShaderProgram()->getShaderProgram(), "mvpmatrix"), 1, GL_FALSE, glm::value_ptr(mvpMat));
-
+	//assign the uniform and render the grid
+	grid.useShaderProgram();
+	glUniformMatrix4fv(glGetUniformLocation(grid.getShaderProgram()->getShaderProgramHandler(), "mvpmatrix"), 1, GL_FALSE, glm::value_ptr(grid.mvpMat));
 	grid.render();
 
 }
@@ -116,19 +88,19 @@ void scene::render() {
 
 void scene::resize(GLsizei width, GLsizei height)
 {
+
+	// Update OpenGL viewport to match window system's window size
 	this->width = width;
 	this->height = height;
-	// Update OpenGL viewport to match window system's window size
 	glViewport(0, 0, width, height);
+
+	projectionMat = glm::ortho(cameraClippingRange.x, cameraClippingRange.y, cameraClippingRange.z, cameraClippingRange.w, 0.0f, 3.0f);
+	
+	viewMat = glm::lookAt(cameraEyePosition, cameraCenterPosition, glm::vec3(1.0f, 1.0f, 1.0f));
 
 	// Set up projection matrix and model matrix etc.
 	//float fovy = 45.0f;
-
-	projectionMat = glm::ortho(cameraClippingRange.x, cameraClippingRange.y, cameraClippingRange.z, cameraClippingRange.w, 0.0f, 3.0f);
-
-
 	//viewMat = glm::lookAt((glm::vec3(0.5f, 0.705, 0.5f)), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f, 1.0f, -1.0f));
-	viewMat = glm::lookAt(cameraEyePosition, cameraCenterPosition, glm::vec3(1.0f, 1.0f, 1.0f));
 
 }
 
