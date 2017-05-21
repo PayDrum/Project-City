@@ -71,9 +71,8 @@ bool checkOpenGLErrors()
 
 int main(int argc, char* args[]) {
 
-	glewWrapper glewInitSettings;
-	SDL sdl(&glewInitSettings);
-	glewInitSettings.init();
+	SDL sdl;
+	
 	
 	
 	bool runRenderLoop = true;

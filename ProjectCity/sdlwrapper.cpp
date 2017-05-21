@@ -5,7 +5,7 @@
 #include "glewwrapper.h"
 #include <iostream>
 
-SDL::SDL(glewWrapper* glewInitSettings) :
+SDL::SDL() :
 	sdlWindow(0),
 	glcontext(0),
 	initSuccess(false)
@@ -27,13 +27,13 @@ SDL::SDL(glewWrapper* glewInitSettings) :
 	//	}
 	//}
 
-
+	glewWrapper glew;
 
 	// Setup OpenGL state before creating a window
-	if (glewInitSettings->enableOpenGLDebugging)
+	if (glew.enableOpenGLDebugging)
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG); // VERY useful for debugging but might affect performance! https://www.opengl.org/wiki/Debug_Output
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, glewInitSettings->ogl_major_version);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, glewInitSettings->ogl_minor_version);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, glew.ogl_major_version);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, glew.ogl_minor_version);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE); 
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 	SDL_GL_SetSwapInterval(1); // Vertical Sync control
@@ -62,7 +62,7 @@ SDL::SDL(glewWrapper* glewInitSettings) :
 		return;
 	}
 
-	
+	glew.init();
 
 	/*std::cout << "SDL_GL_CONTEXT_MAJOR_VERSION: ";
 	if (SDL_GL_GetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, &v))

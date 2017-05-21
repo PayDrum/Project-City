@@ -25,7 +25,7 @@ public:
 	const Uint32 window_width = 640;
 	const Uint32 window_height = 480;
 
-	SDL(glewWrapper* glewInitSettings );
+	SDL();
 	~SDL();
 
 	bool isOk() const;
