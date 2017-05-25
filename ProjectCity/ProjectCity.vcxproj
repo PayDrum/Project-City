@@ -150,6 +150,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="camera.cpp" />
+    <ClCompile Include="coordinateAxes.cpp" />
     <ClCompile Include="glewwrapper.cpp" />
     <ClCompile Include="grid.cpp" />
     <ClCompile Include="main.cpp" />
@@ -161,6 +163,8 @@
     <ClCompile Include="shaderprogram.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="camera.h" />
+    <ClInclude Include="coordinateAxes.h" />
     <ClInclude Include="glewwrapper.h" />
     <ClInclude Include="grid.h" />
     <ClInclude Include="map.h" />
@@ -171,6 +175,8 @@
     <ClInclude Include="shaderprogram.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="shaders\coordinateaxes.fs" />
+    <None Include="shaders\coordinateaxes.vs" />
     <None Include="shaders\grid.fs" />
     <None Include="shaders\grid.vs" />
     <None Include="shaders\groundplane.fs" />

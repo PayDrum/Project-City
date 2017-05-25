@@ -2,11 +2,11 @@
 
 map::map() {
 
-	unsigned int terraformGrid[gridX][gridZ];
-	unsigned int populationGrid[gridX][gridZ];
-	unsigned int roadGrid[gridX][gridZ];
-	unsigned int undergroundGrid[gridX][gridZ];
-	unsigned int subwayGrid[gridX][gridZ];
+	unsigned int terraformGrid[gridX][gridY];
+	unsigned int populationGrid[gridX][gridY];
+	unsigned int roadGrid[gridX][gridY];
+	unsigned int undergroundGrid[gridX][gridY];
+	unsigned int subwayGrid[gridX][gridY];
 
 }
 

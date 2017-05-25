@@ -45,6 +45,7 @@ public:
 
 	virtual bool createGeometry();
 	virtual bool loadShaderProgram();
+	virtual GLenum getDrawingMode() {return GL_TRIANGLES;}
 
 	void createTileMap();
 

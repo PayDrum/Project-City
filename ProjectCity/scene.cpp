@@ -1,13 +1,13 @@
 #include "scene.h"
 
-scene::scene(map* activeMapPtr) : tile(activeMapPtr), grid(activeMapPtr) {
+scene::scene(map* activeMapPtr) : tile(activeMapPtr), grid(activeMapPtr),camera() {
 
 	this->activeMapPtr = activeMapPtr;
 
 	//planeTile tile(activeMapPtr);
 	//grid grid(activeMapPtr);
 
-	// These OpenGL functions must be defined by the OpenGL (or through GLEW) for this example to work..
+	// These OpenGL functions must be defined by the OpenGL (or through GLEW) for this to work..
 	assert(glBindBuffer != 0);
 	assert(glBindVertexArray != 0);
 	assert(glBufferData != 0);
@@ -44,6 +44,10 @@ bool scene::init() {
 	if (!grid.load())
 		return false;
 	// Create tile geometry
+
+	if (!coordinateAxes.load())
+		return false;
+
 	return true;
 
 }
@@ -69,8 +73,9 @@ void scene::render() {
 	//modelMat = glm::scale(modelMat, glm::vec3(0.3f, 0.3f, 0.3f));
 
 	//build the mvp mat for each model
-	tile.mvpMat = projectionMat * viewMat *tile.getModelMat();
-	grid.mvpMat = projectionMat * viewMat * grid.getModelMat();
+	tile.mvpMat = camera.projectionMat * camera.viewMat *tile.getModelMat();
+	grid.mvpMat = camera.projectionMat * camera.viewMat * grid.getModelMat();
+	coordinateAxes.mvpMat = camera.projectionMat * camera.viewMat * coordinateAxes.getModelMat();
 
 	//assign the uniform and render the tilemap(not a single tile)
 	tile.useShaderProgram();
@@ -83,6 +88,9 @@ void scene::render() {
 	glUniformMatrix4fv(glGetUniformLocation(grid.getShaderProgram()->getShaderProgramHandler(), "mvpmatrix"), 1, GL_FALSE, glm::value_ptr(grid.mvpMat));
 	grid.render();
 
+	coordinateAxes.useShaderProgram();
+	glUniformMatrix4fv(glGetUniformLocation(coordinateAxes.getShaderProgram()->getShaderProgramHandler(), "mvpmatrix"), 1, GL_FALSE, glm::value_ptr(coordinateAxes.mvpMat));
+	coordinateAxes.render();
 }
 
 
@@ -94,9 +102,11 @@ void scene::resize(GLsizei width, GLsizei height)
 	this->height = height;
 	glViewport(0, 0, width, height);
 
-	projectionMat = glm::ortho(cameraClippingRange.x, cameraClippingRange.y, cameraClippingRange.z, cameraClippingRange.w, 0.0f, 3.0f);
+	camera.calculateProjectionMat();
+	camera.calculateViewMat();
+	//projectionMat = glm::ortho(cameraClippingRange.x, cameraClippingRange.y, cameraClippingRange.z, cameraClippingRange.w,-3.0f,3.0f);
 	
-	viewMat = glm::lookAt(cameraEyePosition, cameraCenterPosition, glm::vec3(1.0f, 1.0f, 1.0f));
+	//viewMat = glm::lookAt(cameraEyePosition, cameraCenterPosition, glm::vec3(1.0f, 1.0f, 1.0f));
 
 	// Set up projection matrix and model matrix etc.
 	//float fovy = 45.0f;
@@ -119,14 +129,18 @@ bool scene::handleEvent(const SDL_Event &e)
 	if (e.type == SDL_MOUSEWHEEL) {
 
 		zoomFactor = 0;
+
+		//zoomout
 		if (e.wheel.y < 0)
 			zoomFactor--;
+
+		//zoomin
 		if (e.wheel.y > 0)
 			zoomFactor++;
 		zoomFactor /= 100;
 
-		cameraClippingRange += glm::vec4(zoomFactor, -zoomFactor, -zoomFactor, zoomFactor);
-		projectionMat = glm::ortho(cameraClippingRange.x, cameraClippingRange.y, cameraClippingRange.z, cameraClippingRange.w, 0.0f, 3.0f);
+		camera.cameraClippingRange += glm::vec4(zoomFactor, -zoomFactor, zoomFactor, -zoomFactor);
+		camera.calculateProjectionMat();
 
 		/*eye.x += (zoomFactor / 100);
 		eye.y += (zoomFactor / 100);
@@ -141,18 +155,19 @@ bool scene::handleEvent(const SDL_Event &e)
 		switch (e.key.keysym.sym) {
 
 		case(SDLK_RIGHT):
-			panVector.x++; panVector.z--; break;
+			panVector.x++; panVector.y--; break;
 		case (SDLK_LEFT):
-			panVector.x--; panVector.z++; break;
-		case (SDLK_UP):
-			panVector.z++; panVector.x++; break;
+			panVector.x--; panVector.y++; break;
 		case (SDLK_DOWN):
-			panVector.z--; panVector.x--; break;
+			panVector.y--; panVector.x--; break;
+		case (SDLK_UP):
+			panVector.y++; panVector.x++; break;
 		}
 		panVector /= 100;
-		cameraEyePosition += panVector;
-		cameraCenterPosition += panVector;
-		viewMat = glm::lookAt(cameraEyePosition, cameraCenterPosition, glm::vec3(-1.0f, 1.0f, -1.0f));
+
+		camera.eyePosition += panVector;
+		camera.centerPosition += panVector;
+		camera.calculateViewMat();
 		//bullshit += glm::vec4(panFactor, -panFactor, -panFactor, panFactor);
 
 	}
@@ -161,7 +176,8 @@ bool scene::handleEvent(const SDL_Event &e)
 
 		GLfloat pixels[3];
 		glReadPixels(e.button.x, this->height - 1 - e.button.y, 1, 1, GL_RGB, GL_FLOAT, &pixels[0]);
-		printf("%f , %f, %f", pixels[0], pixels[1], pixels[2]);
+		//printf("%f , %f, %f", pixels[0], pixels[1], pixels[2]);
+		printf("%d , %d", e.button.x, e.button.y);
 	}
 	//if (e.type == SDL_MOUSEMOTION) {
 	//	//switch(e.)
@@ -190,9 +206,8 @@ bool scene::handleEvent(const SDL_Event &e)
 
 
 	//	viewMat = glm::lookAt(cameraEyePosition, glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
-
-
 	//}
+
 
 	return true;
 

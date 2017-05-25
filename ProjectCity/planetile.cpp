@@ -4,7 +4,7 @@ planeTile::planeTile(map* mapInstancePtr) {
 
 
 	this->mapInstanceptr = mapInstancePtr;
-	setScale(1.0f / (2.0f* mapInstancePtr->getGridX()));
+	setUniformScale(1.0f / (2.0f* mapInstancePtr->getGridX()));
 	//ShaderProgram shaderProgram;
 }
 
@@ -24,12 +24,12 @@ planeTile::~planeTile() {
 bool planeTile::createGeometry() {
 
 	modelPositions.clear();
-	indices.clear();
+	modelIndices.clear();
 
-	modelPositions.push_back(glm::vec3(-1.0f, 0.0f, 1.0f));
-	modelPositions.push_back(glm::vec3(1.0f, 0.0f, 1.0f));
-	modelPositions.push_back(glm::vec3(-1.0f, 0.0f, -1.0f));
-	modelPositions.push_back(glm::vec3(1.0f, 0.0f, -1.0f));
+	modelPositions.push_back(glm::vec3(-1.0f, 1.0f, 0.0f));
+	modelPositions.push_back(glm::vec3(1.0f, 1.0f, 0.0f));
+	modelPositions.push_back(glm::vec3(-1.0f, -1.0f, 0.0f));
+	modelPositions.push_back(glm::vec3(1.0f, -1.0f, 0.0f));
 
 	modelColors.push_back(glm::vec3(0.5f, 0.5f, 0.5f));;
 	modelColors.push_back(glm::vec3(1, 0.5f, 0.5f));
@@ -37,12 +37,12 @@ bool planeTile::createGeometry() {
 	modelColors.push_back(glm::vec3(0.5f, 0.5f, 0.5f));
 
 
-	indices.push_back(0);
-	indices.push_back(3);
-	indices.push_back(2);
-	indices.push_back(0);
-	indices.push_back(1);
-	indices.push_back(3);
+	modelIndices.push_back(0);
+	modelIndices.push_back(3);
+	modelIndices.push_back(2);
+	modelIndices.push_back(0);
+	modelIndices.push_back(1);
+	modelIndices.push_back(3);
 
 	//
 	//this->initialScale = 1.0f;
@@ -93,10 +93,10 @@ void planeTile::renderInstanced() {
 
 	glBindVertexArray(vao);
 	glDrawElementsInstanced(GL_TRIANGLES
-		, static_cast<GLsizei>(indices.size())
+		, static_cast<GLsizei>(modelIndices.size())
 		, GL_UNSIGNED_SHORT
-		, &indices[0],
-		mapInstanceptr->getGridX() * mapInstanceptr->getGridZ());
+		, &modelIndices[0],
+		mapInstanceptr->getGridX() * mapInstanceptr->getGridY());
 
 	glBindVertexArray(0);
 }
@@ -108,15 +108,18 @@ void planeTile::createTileMap() {
 	//GLfloat offsetX = 1.0f / (mapInstanceptr->getGridX());
 
 
-	for (int zIterator = -mapInstanceptr->getGridZ(); zIterator < mapInstanceptr->getGridZ(); zIterator += 2)
+	for (int yIterator = -mapInstanceptr->getGridY(); yIterator < mapInstanceptr->getGridY(); yIterator += 2)
 	{
 		for (int xIterator = -mapInstanceptr->getGridX(); xIterator < mapInstanceptr->getGridX(); xIterator += 2)
 		{
 			property.translateMat = glm::translate(glm::mat4(1.0f),
-				glm::vec3(xIterator + 1.0f, 0, zIterator + 1.0f));
-			property.color = glm::vec3(xIterator + mapInstanceptr->getGridX(), 255, zIterator + mapInstanceptr->getGridZ()) / 510.0f;
+				glm::vec3(xIterator + 1.0f, yIterator + 1.0f, 0));
+
+			//this color is assigned this way for later object picking
+			property.color = glm::vec3(xIterator + mapInstanceptr->getGridX(), 255, yIterator + mapInstanceptr->getGridY()) / 510.0f;
+
 			propertyCollection.push_back(property);
 		}
 	}
-	setTranslate(glm::vec3(0.5f, 0, 0.5f));
+	setTranslate(glm::vec3(0.5f, 0.5f, 0));
 }

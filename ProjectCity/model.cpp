@@ -35,10 +35,10 @@ void model::buildBuffers() {
 
 	}
 
-	if (!indices.empty()) {
+	if (!modelIndices.empty()) {
 		glGenBuffers(1, &ibo);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), &indices[0], GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(modelIndices), &modelIndices[0], GL_STATIC_DRAW);
 	}
 
 	
@@ -75,18 +75,23 @@ bool model::load() {
 void model::render() {
 
 	glBindVertexArray(vao);
-	glDrawElements(GL_LINES, static_cast<GLsizei>(indices.size()), GL_UNSIGNED_SHORT, &indices[0]);
+	glDrawElements(getDrawingMode(), static_cast<GLsizei>(modelIndices.size()), GL_UNSIGNED_SHORT, &modelIndices[0]);
 
 	glBindVertexArray(0);
 }
 
 
 
-void model::setScale(GLfloat scale) {
+void model::setScale(glm::vec3 scaleVec) {
 
-	this->scaleFactor *= scale;
-	this->scaleMat = glm::scale(this->scaleMat, glm::vec3(1.0f)*scaleFactor);
+	//this->scaleFactor *= scale;
+	this->scaleMat = glm::scale(this->scaleMat, scaleVec);
 	updateModelMat();
+}
+
+void model::setUniformScale(GLfloat scaleFactor) {
+
+	this->scaleMat = glm::scale(this->scaleMat, glm::vec3(1.0f)*scaleFactor);
 }
 
 void model::setRotation(GLfloat angle, glm::vec3 axis) {

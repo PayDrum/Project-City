@@ -5,8 +5,8 @@
 class map {
 
 private:
-	static const unsigned int gridX = 100;
-	static const unsigned int gridZ = 100;
+	static const unsigned int gridX = 10;
+	static const unsigned int gridY = 10;
 
 	
 
@@ -19,7 +19,7 @@ private:
 public:
 
 	int getGridX() { return gridX; }
-	int getGridZ() {return gridZ;}
+	int getGridY() {return gridY;}
 
 	map();
 	~map();

@@ -14,6 +14,7 @@ bool glewWrapper::init() {
 		return false;
 	}
 
+	return true;
 	// Initialize GLEW now that we have a context
 		// Setting glewExperimental allows OpenGL symbols to be found even when they are not listed in driver's extension list - Needed when using core profiles due to GLEW bugs
 		// Depending on the drivers, this might be necessary to get even some of the basic functionality to work.
