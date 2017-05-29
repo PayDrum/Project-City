@@ -5,8 +5,8 @@
 class map {
 
 private:
-	static const unsigned int gridX = 10;
-	static const unsigned int gridY = 10;
+	static const unsigned int gridX = 100;
+	static const unsigned int gridY = 100;
 
 	
 

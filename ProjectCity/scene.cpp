@@ -1,6 +1,6 @@
 #include "scene.h"
 
-scene::scene(map* activeMapPtr) : tile(activeMapPtr), grid(activeMapPtr),camera() {
+scene::scene(map* activeMapPtr) : tile(activeMapPtr), grid(activeMapPtr), camera() {
 
 	this->activeMapPtr = activeMapPtr;
 
@@ -66,16 +66,10 @@ void scene::render() {
 	//glEnable(GL_CULL_FACE);
 	glDisable(GL_CULL_FACE);
 
-	// Calculate model transformation
-	//modelMat = glm::mat4(1.0f);
-	//modelMat = glm::translate(modelMat, glm::vec3(1.0, 0.0, 0.0)); // Translate object +1 on x-axis after rotation
-	//modelMat = glm::rotate(modelMat, rotation, glm::vec3(0.0, 1.0, 0.0)); // Rotate object around y-axis
-	//modelMat = glm::scale(modelMat, glm::vec3(0.3f, 0.3f, 0.3f));
-
 	//build the mvp mat for each model
-	tile.mvpMat = camera.projectionMat * camera.viewMat *tile.getModelMat();
-	grid.mvpMat = camera.projectionMat * camera.viewMat * grid.getModelMat();
-	coordinateAxes.mvpMat = camera.projectionMat * camera.viewMat * coordinateAxes.getModelMat();
+	tile.mvpMat = camera.getProjectionMat() * camera.getViewMat() *tile.getModelMat();
+	grid.mvpMat = camera.getProjectionMat() * camera.getViewMat() * grid.getModelMat();
+	coordinateAxes.mvpMat = camera.getProjectionMat() * camera.getViewMat() * coordinateAxes.getModelMat();
 
 	//assign the uniform and render the tilemap(not a single tile)
 	tile.useShaderProgram();
@@ -102,16 +96,9 @@ void scene::resize(GLsizei width, GLsizei height)
 	this->height = height;
 	glViewport(0, 0, width, height);
 
-	camera.calculateProjectionMat();
-	camera.calculateViewMat();
-	//projectionMat = glm::ortho(cameraClippingRange.x, cameraClippingRange.y, cameraClippingRange.z, cameraClippingRange.w,-3.0f,3.0f);
-	
-	//viewMat = glm::lookAt(cameraEyePosition, cameraCenterPosition, glm::vec3(1.0f, 1.0f, 1.0f));
-
-	// Set up projection matrix and model matrix etc.
-	//float fovy = 45.0f;
-	//viewMat = glm::lookAt((glm::vec3(0.5f, 0.705, 0.5f)), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f, 1.0f, -1.0f));
-
+	//we technically dont need to do these here, because our orthographic arguments are fixed and are not changed by resize. To be moved to scene constructor.
+	//camera.calculateProjectionMat();
+	//camera.calculateViewMat();
 }
 
 
@@ -126,89 +113,60 @@ void scene::update() {
 bool scene::handleEvent(const SDL_Event &e)
 {
 
-	if (e.type == SDL_MOUSEWHEEL) {
-
-		zoomFactor = 0;
-
-		//zoomout
-		if (e.wheel.y < 0)
-			zoomFactor--;
-
-		//zoomin
-		if (e.wheel.y > 0)
-			zoomFactor++;
-		zoomFactor /= 100;
-
-		camera.cameraClippingRange += glm::vec4(zoomFactor, -zoomFactor, zoomFactor, -zoomFactor);
-		camera.calculateProjectionMat();
-
-		/*eye.x += (zoomFactor / 100);
-		eye.y += (zoomFactor / 100);
-		eye.z += (zoomFactor / 100);
-		viewMat = glm::lookAt(eye, glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));*/
-
-
-		//projectionMat = glm::ortho(-0.5f, 0.5f, -0.5f, 0.5f, 0.0f, zoomFactor);
+	if (e.type == SDL_MOUSEWHEEL) 
+	{
+		camera.zoomCamera(e.wheel.y);
 	}
-	if (e.type == SDL_KEYDOWN) {
-		glm::vec3 panVector;
-		switch (e.key.keysym.sym) {
 
-		case(SDLK_RIGHT):
-			panVector.x++; panVector.y--; break;
-		case (SDLK_LEFT):
-			panVector.x--; panVector.y++; break;
-		case (SDLK_DOWN):
-			panVector.y--; panVector.x--; break;
-		case (SDLK_UP):
-			panVector.y++; panVector.x++; break;
+	if (e.type == SDL_KEYDOWN) 
+	{
+		if (e.key.keysym.sym == SDLK_RIGHT) {
+			camera.truckCamera(camera::truckDirection::right);
 		}
-		panVector /= 100;
-
-		camera.eyePosition += panVector;
-		camera.centerPosition += panVector;
-		camera.calculateViewMat();
-		//bullshit += glm::vec4(panFactor, -panFactor, -panFactor, panFactor);
-
+		else if (e.key.keysym.sym == SDLK_LEFT) {
+			camera.truckCamera(camera::truckDirection::left);
+		}
+		else if (e.key.keysym.sym == SDLK_UP) {
+			camera.dollyCamera(camera::dollyDirection::forward);
+		}
+		else if (e.key.keysym.sym == SDLK_DOWN) {
+			camera.dollyCamera(camera::dollyDirection::backwards);
+		}
 	}
 
-	if (e.type == SDL_MOUSEBUTTONDOWN) {
-
-		GLfloat pixels[3];
-		glReadPixels(e.button.x, this->height - 1 - e.button.y, 1, 1, GL_RGB, GL_FLOAT, &pixels[0]);
-		//printf("%f , %f, %f", pixels[0], pixels[1], pixels[2]);
-		printf("%d , %d", e.button.x, e.button.y);
+	if (e.type == SDL_MOUSEBUTTONDOWN) 
+	{
+		if (e.button.button == SDL_BUTTON_LEFT) {
+			//object picker
+			GLfloat pixels[3];
+			glReadPixels(e.button.x, this->height - 1 - e.button.y, 1, 1, GL_RGB, GL_FLOAT, &pixels[0]);
+			//printf("%f , %f, %f", pixels[0], pixels[1], pixels[2]);
+			//printf("%d , %d", e.button.x, e.button.y);
+		}
+		if (e.button.button == SDL_BUTTON_RIGHT)
+		{
+			SDL_SetRelativeMouseMode(SDL_TRUE);
+			isRightMouseButtonDown = true;
+		}
 	}
-	//if (e.type == SDL_MOUSEMOTION) {
-	//	//switch(e.)
-	//	if (e.motion.xrel > 0)
-	//		horizontalAngle++;
-	//	if (e.motion.xrel < 0)
-	//		horizontalAngle--;
 
+	if (e.type == SDL_MOUSEBUTTONUP) {
 
-	//	if (e.motion.yrel > 0)
-	//		verticalAngle++;
-	//	if (e.motion.yrel < 0)
-	//		verticalAngle--;
+		if (e.button.button == SDL_BUTTON_RIGHT)
+		{
+			SDL_SetRelativeMouseMode(SDL_FALSE);
+			isRightMouseButtonDown = false;
+		}
+	}
 
-	//	if (verticalAngle > 89.0f)
-	//		verticalAngle = 89.0f;
-	//	if (verticalAngle < 5.0f)
-	//		verticalAngle = 5.0f;
+	if (e.type == SDL_MOUSEMOTION && isRightMouseButtonDown)
+	{
+		if (e.motion.yrel != 0)
+			camera.pitchCamera(e.motion.yrel);
 
-	//	cameraEyePosition.x =
-	//		cos(verticalAngle* glm::pi<float>() / 180) * sin(horizontalAngle* glm::pi<float>() / 180);
-	//	cameraEyePosition.y =
-	//		sin(verticalAngle* glm::pi<float>() / 180);
-	//	cameraEyePosition.z =
-	//		cos(verticalAngle* glm::pi<float>() / 180) * cos(horizontalAngle* glm::pi<float>() / 180);
-
-
-	//	viewMat = glm::lookAt(cameraEyePosition, glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
-	//}
-
-
+		if (e.motion.xrel != 0)
+			camera.yawCamera(e.motion.xrel);
+	}
 	return true;
 
 }
